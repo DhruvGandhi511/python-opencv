@@ -1,0 +1,87 @@
+import cv2 
+import numpy as np 
+from matplotlib import pyplot as plt
+  
+image = cv2.imread('messi.jpg') 
+  
+ 
+height, width = image.shape[:2] 
+
+  
+quarter_height, quarter_width = height / 16, width / 16
+  
+T = np.float32([[1, 0, quarter_width], [0, 1, quarter_height]]) 
+  
+
+img_translation = cv2.warpAffine(image, T, (width, height))
+plt.subplot(5,3,1)
+plt.imshow(img_translation) 
+
+
+img = cv2.rotate(image, cv2.cv2.ROTATE_90_CLOCKWISE)
+plt.subplot(5,3,2)
+plt.imshow(img) 
+
+
+rows,cols,ch = image.shape
+
+pts1 = np.float32([[56,65],[368,52],[28,387],[389,390]])
+pts2 = np.float32([[0,0],[300,0],[0,300],[300,300]])
+M = cv2.getPerspectiveTransform(pts1,pts2)
+dst = cv2.warpPerspective(image,M,(300,300))
+plt.subplot(5,3,3)
+plt.imshow(dst) 
+
+
+pts3= np.float32([[50,50],[200,50],[50,200]])
+pts4 = np.float32([[10,100],[200,50],[100,250]])
+M1 = cv2.getAffineTransform(pts3,pts4)
+abc = cv2.warpAffine(image,M1,(cols,rows))
+plt.subplot(5,3,4)
+plt.imshow(abc) 
+
+res = cv2.resize(image,(2*width, 2*height), interpolation = cv2.INTER_CUBIC)
+plt.subplot(5,3,5)
+plt.imshow(res) 
+
+
+cba = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+ret, thresh1 = cv2.threshold(image, 120, 255, cv2.THRESH_BINARY)
+plt.subplot(5,3,6)
+plt.imshow(thresh1)
+ret, thresh2 = cv2.threshold(image, 120, 255, cv2.THRESH_BINARY_INV) 
+plt.subplot(5,3,7)
+plt.imshow(thresh2)
+ret, thresh3 = cv2.threshold(image, 120, 255, cv2.THRESH_TRUNC)
+plt.subplot(5,3,8)
+plt.imshow(thresh3) 
+ret, thresh4 = cv2.threshold(image, 120, 255, cv2.THRESH_TOZERO)
+plt.subplot(5,3,9)
+plt.imshow(thresh4) 
+ret, thresh5 = cv2.threshold(image, 120, 255, cv2.THRESH_TOZERO_INV)
+plt.subplot(5,3,10)
+plt.imshow(thresh5) 
+thresh6 = cv2.adaptiveThreshold(cba, 255, cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY, 199, 5)
+plt.subplot(5,3,11)
+plt.imshow(thresh6)
+thresh7 = cv2.adaptiveThreshold(cba, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY, 199, 5)
+plt.subplot(5,3,12)
+plt.imshow(thresh7)
+ret, thresh8 = cv2.threshold(cba, 120, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+plt.subplot(5,3,13)
+plt.imshow(thresh8)
+plt.show()
+# cv2.imshow('Binary Threshold', thresh1) 
+# cv2.imshow('Binary Threshold Inverted', thresh2) 
+# cv2.imshow('Truncated Threshold', thresh3) 
+# cv2.imshow('Set to 0', thresh4) 
+# cv2.imshow('Set to 0 Inverted', thresh5)  
+# cv2.imshow('Adaptive Mean', thresh6) 
+# cv2.imshow('Adaptive Gaussian', thresh7) 
+# cv2.imshow('Otsu Threshold', thresh8)
+# cv2.imshow("Originalimage", image) 
+# cv2.imshow('Translation', res) 
+
+cv2.waitKey() 
+  
+cv2.destroyAllWindows()
